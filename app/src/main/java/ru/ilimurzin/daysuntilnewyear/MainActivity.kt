@@ -11,10 +11,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import ru.ilimurzin.daysuntilnewyear.ui.theme.Theme
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -26,14 +32,32 @@ class MainActivity : ComponentActivity() {
         setContent {
             Theme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Counter(
-                        now = LocalDateTime.now(),
+                    NowCounter(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
     }
+}
+
+@Composable
+fun NowCounter(
+    modifier: Modifier = Modifier,
+) {
+    var now by remember { mutableStateOf(LocalDateTime.now()) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000) // every second
+            now = LocalDateTime.now()
+        }
+    }
+
+    Counter(
+        now = now,
+        modifier = modifier,
+    )
 }
 
 @Composable
