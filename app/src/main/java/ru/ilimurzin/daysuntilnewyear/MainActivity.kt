@@ -100,7 +100,7 @@ fun Counter(
                 number = minutesUntilNewYear.toString()
                 description = if (minutesUntilNewYear == 1L) "minute" else "minutes"
             } else {
-                val secondsUntilNewYear = ChronoUnit.SECONDS.between(now, newYear)
+                val secondsUntilNewYear = ChronoUnit.SECONDS.between(now, newYear) + 1
 
                 number = secondsUntilNewYear.toString()
                 description = if (secondsUntilNewYear == 1L) "second" else "seconds"
@@ -188,7 +188,7 @@ fun OneMinuteBeforePreview() {
 @Composable
 fun TwoSecondsBeforePreview() {
     Theme {
-        Counter(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 59, 58))
+        Counter(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 59, 58, 1))
     }
 }
 
@@ -196,7 +196,7 @@ fun TwoSecondsBeforePreview() {
 @Composable
 fun OneSecondBeforePreview() {
     Theme {
-        Counter(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 59, 59))
+        Counter(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 59, 59, 1))
     }
 }
 
