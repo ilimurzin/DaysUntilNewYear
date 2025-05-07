@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import ru.ilimurzin.daysuntilnewyear.ui.theme.Theme
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 class MainActivity : ComponentActivity() {
@@ -37,23 +37,42 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Counter(modifier: Modifier = Modifier) {
-    val today = LocalDate.now()
-    val newYear = LocalDate.of(today.year + 1, 1, 1) // Next January 1st
-    val daysUntilNewYear = ChronoUnit.DAYS.between(today, newYear)
+    val now = LocalDateTime.now()
+    val newYear = LocalDateTime.of(now.year + 1, 1, 1, 0, 0) // Next January 1st 00:00
+    val daysUntilNewYear = ChronoUnit.DAYS.between(now, newYear)
 
-    Column(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = daysUntilNewYear.toString(),
-            fontSize = 48.sp,
-        )
-        Text(
-            text = "days until New Year",
-            fontSize = 24.sp,
-        )
+    if (daysUntilNewYear > 0) {
+        Column(
+            modifier = modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = daysUntilNewYear.toString(),
+                fontSize = 48.sp,
+            )
+            Text(
+                text = "days until New Year",
+                fontSize = 24.sp,
+            )
+        }
+    } else {
+        val hoursUntilNewYear = ChronoUnit.HOURS.between(now, newYear)
+
+        Column(
+            modifier = modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = hoursUntilNewYear.toString(),
+                fontSize = 48.sp,
+            )
+            Text(
+                text = "hours until New Year",
+                fontSize = 24.sp,
+            )
+        }
     }
 }
 
