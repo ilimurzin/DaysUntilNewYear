@@ -49,7 +49,7 @@ fun NowCounter(
 
     LaunchedEffect(Unit) {
         while (true) {
-            delay(1000) // every second
+            delay(500)
             now = LocalDateTime.now()
         }
     }
