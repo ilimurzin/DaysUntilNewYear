@@ -41,10 +41,7 @@ fun Counter(
     now: LocalDateTime,
     modifier: Modifier = Modifier,
 ) {
-    val newYear = LocalDateTime.of(now.year + 1, 1, 1, 0, 0) // Next January 1st 00:00
-    val daysUntilNewYear = ChronoUnit.DAYS.between(now, newYear)
-
-    if (daysUntilNewYear == 365L) {
+    if (now.dayOfYear == 1) {
         return Column(
             modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
@@ -56,6 +53,9 @@ fun Counter(
             )
         }
     }
+
+    val newYear = LocalDateTime.of(now.year + 1, 1, 1, 0, 0) // Next January 1st 00:00
+    val daysUntilNewYear = ChronoUnit.DAYS.between(now, newYear)
 
     val number: String
     val description: String
@@ -181,5 +181,21 @@ fun OneSecondBeforePreview() {
 fun NewYearPreview() {
     Theme {
         Counter(LocalDateTime.of(LocalDateTime.now().year, 1, 1, 0, 0))
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun January1stPreview() {
+    Theme {
+        Counter(LocalDateTime.of(LocalDateTime.now().year, 1, 1, 14, 50))
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun January2ndPreview() {
+    Theme {
+        Counter(LocalDateTime.of(LocalDateTime.now().year, 1, 2, 14, 50))
     }
 }
