@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import ru.ilimurzin.daysuntilnewyear.ui.theme.Theme
@@ -54,14 +55,14 @@ fun NowCounter(
         }
     }
 
-    Counter(
+    Countdown(
         now = now,
         modifier = modifier,
     )
 }
 
 @Composable
-fun Counter(
+fun Countdown(
     now: LocalDateTime,
     modifier: Modifier = Modifier,
 ) {
@@ -80,47 +81,47 @@ fun Counter(
 
     val newYear = LocalDateTime.of(now.year + 1, 1, 1, 0, 0) // Next January 1st 00:00
     val daysUntilNewYear = ChronoUnit.DAYS.between(now, newYear)
-
-    val number: String
-    val description: String
-
-    if (daysUntilNewYear > 0) {
-        number = daysUntilNewYear.toString()
-        description = if (daysUntilNewYear == 1L) "day" else "days"
-    } else {
-        val hoursUntilNewYear = ChronoUnit.HOURS.between(now, newYear)
-
-        if (hoursUntilNewYear > 0) {
-            number = hoursUntilNewYear.toString()
-            description = if (hoursUntilNewYear == 1L) "hour" else "hours"
-        } else {
-            val minutesUntilNewYear = ChronoUnit.MINUTES.between(now, newYear)
-
-            if (minutesUntilNewYear > 0) {
-                number = minutesUntilNewYear.toString()
-                description = if (minutesUntilNewYear == 1L) "minute" else "minutes"
-            } else {
-                val secondsUntilNewYear = ChronoUnit.SECONDS.between(now, newYear) + 1
-
-                number = secondsUntilNewYear.toString()
-                description = if (secondsUntilNewYear == 1L) "second" else "seconds"
-            }
-        }
-    }
+    val hoursUntilNewYear = ChronoUnit.HOURS.between(now, newYear)
+    val minutesUntilNewYear = ChronoUnit.MINUTES.between(now, newYear)
+    val secondsUntilNewYear = ChronoUnit.SECONDS.between(now, newYear)
 
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            text = number,
-            fontSize = 48.sp,
+        if (daysUntilNewYear > 0) {
+            CountdownUnit(
+                daysUntilNewYear.toString(),
+                if (daysUntilNewYear == 1L) "day" else "days",
+            )
+        }
+
+        if (hoursUntilNewYear > 0) {
+            val hours = secondsUntilNewYear % 86400 / 3600
+
+            CountdownUnit(
+                hours.toString(),
+                if (hours == 1L) "hour" else "hours",
+            )
+        }
+
+        if (minutesUntilNewYear > 0) {
+            val minutes = secondsUntilNewYear % 3600 / 60
+
+            CountdownUnit(
+                minutes.toString(),
+                if (minutes == 1L) "minute" else "minutes",
+            )
+        }
+
+        val seconds = secondsUntilNewYear % 60
+
+        CountdownUnit(
+            seconds.toString(),
+            if (seconds == 1L) "second" else "seconds",
         )
-        Text(
-            text = description,
-            fontSize = 24.sp,
-        )
+
         Text(
             text = " until New Year",
             fontSize = 24.sp,
@@ -128,11 +129,27 @@ fun Counter(
     }
 }
 
+@Composable
+fun CountdownUnit(
+    number: String,
+    label: String,
+) {
+    Text(
+        text = number,
+        fontSize = 48.sp,
+    )
+    Text(
+        text = label,
+        fontSize = 24.sp,
+        modifier = Modifier.padding(bottom = 24.dp),
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun NowPreview() {
     Theme {
-        Counter(LocalDateTime.now())
+        Countdown(LocalDateTime.now())
     }
 }
 
@@ -140,7 +157,7 @@ fun NowPreview() {
 @Composable
 fun TwoDaysBeforePreview() {
     Theme {
-        Counter(LocalDateTime.of(LocalDateTime.now().year, 12, 29, 23, 0))
+        Countdown(LocalDateTime.of(LocalDateTime.now().year, 12, 29, 23, 0, 33))
     }
 }
 
@@ -148,7 +165,7 @@ fun TwoDaysBeforePreview() {
 @Composable
 fun OneDayBeforePreview() {
     Theme {
-        Counter(LocalDateTime.of(LocalDateTime.now().year, 12, 30, 23, 0))
+        Countdown(LocalDateTime.of(LocalDateTime.now().year, 12, 30, 23, 0, 33))
     }
 }
 
@@ -156,7 +173,7 @@ fun OneDayBeforePreview() {
 @Composable
 fun TwoHoursBeforePreview() {
     Theme {
-        Counter(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 22, 0))
+        Countdown(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 22, 0, 33))
     }
 }
 
@@ -164,7 +181,7 @@ fun TwoHoursBeforePreview() {
 @Composable
 fun OneHourBeforePreview() {
     Theme {
-        Counter(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 0))
+        Countdown(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 0))
     }
 }
 
@@ -172,7 +189,7 @@ fun OneHourBeforePreview() {
 @Composable
 fun TwoMinutesBeforePreview() {
     Theme {
-        Counter(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 58))
+        Countdown(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 58))
     }
 }
 
@@ -180,23 +197,31 @@ fun TwoMinutesBeforePreview() {
 @Composable
 fun OneMinuteBeforePreview() {
     Theme {
-        Counter(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 59))
+        Countdown(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 59))
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun TwoSecondsBeforePreview() {
+fun LessThanAMinuteBeforePreview() {
     Theme {
-        Counter(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 59, 58, 1))
+        Countdown(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 59, 43))
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun OneSecondBeforePreview() {
+fun BetweenOneAndTwoSecondsBeforePreview() {
     Theme {
-        Counter(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 59, 59, 1))
+        Countdown(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 59, 58, 1))
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LessThanASecondBeforePreview() {
+    Theme {
+        Countdown(LocalDateTime.of(LocalDateTime.now().year, 12, 31, 23, 59, 59, 1))
     }
 }
 
@@ -204,7 +229,7 @@ fun OneSecondBeforePreview() {
 @Composable
 fun NewYearPreview() {
     Theme {
-        Counter(LocalDateTime.of(LocalDateTime.now().year, 1, 1, 0, 0))
+        Countdown(LocalDateTime.of(LocalDateTime.now().year, 1, 1, 0, 0, 33))
     }
 }
 
@@ -212,7 +237,7 @@ fun NewYearPreview() {
 @Composable
 fun January1stPreview() {
     Theme {
-        Counter(LocalDateTime.of(LocalDateTime.now().year, 1, 1, 14, 50))
+        Countdown(LocalDateTime.of(LocalDateTime.now().year, 1, 1, 14, 50, 33))
     }
 }
 
@@ -220,6 +245,6 @@ fun January1stPreview() {
 @Composable
 fun January2ndPreview() {
     Theme {
-        Counter(LocalDateTime.of(LocalDateTime.now().year, 1, 2, 14, 50))
+        Countdown(LocalDateTime.of(LocalDateTime.now().year, 1, 2, 14, 50, 33))
     }
 }
