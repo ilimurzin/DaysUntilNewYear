@@ -6,8 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -61,6 +64,7 @@ fun NowCounter(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun Countdown(
     now: LocalDateTime,
@@ -85,64 +89,71 @@ fun Countdown(
     val minutesUntilNewYear = ChronoUnit.MINUTES.between(now, newYear)
     val secondsUntilNewYear = ChronoUnit.SECONDS.between(now, newYear)
 
+    var displayMode by remember { mutableStateOf("Days") }
+
+    if (displayMode == "Days" && daysUntilNewYear <= 0) {
+        displayMode = "Hours"
+    }
+
+    if (displayMode == "Hours" && hoursUntilNewYear <= 0) {
+        displayMode = "Minutes"
+    }
+
+    if (displayMode == "Minutes" && minutesUntilNewYear <= 0) {
+        displayMode = "Seconds"
+    }
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        if (daysUntilNewYear > 0) {
-            CountdownUnit(
-                daysUntilNewYear.toString(),
-                if (daysUntilNewYear == 1L) "day" else "days",
-            )
+        when (displayMode) {
+            "Days" -> Text(text = daysUntilNewYear.toString(), fontSize = 48.sp)
+            "Hours" -> Text(text = hoursUntilNewYear.toString(), fontSize = 48.sp)
+            "Minutes" -> Text(text = minutesUntilNewYear.toString(), fontSize = 48.sp)
+            "Seconds" -> Text(text = secondsUntilNewYear.toString(), fontSize = 48.sp)
         }
 
-        if (hoursUntilNewYear > 0) {
-            val hours = secondsUntilNewYear % 86400 / 3600
-
-            CountdownUnit(
-                hours.toString(),
-                if (hours == 1L) "hour" else "hours",
-            )
+        Row(
+            modifier = Modifier.padding(top = 16.dp),
+        ) {
+            ToggleButton(
+                checked = displayMode == "Days",
+                onCheckedChange = { displayMode = "Days" },
+                enabled = daysUntilNewYear > 0,
+            ) {
+                Text("Days")
+            }
+            ToggleButton(
+                checked = displayMode == "Hours",
+                onCheckedChange = { displayMode = "Hours" },
+                enabled = hoursUntilNewYear > 0,
+            ) {
+                Text("Hours")
+            }
+            ToggleButton(
+                checked = displayMode == "Minutes",
+                onCheckedChange = { displayMode = "Minutes" },
+                enabled = minutesUntilNewYear > 0,
+            ) {
+                Text("Minutes")
+            }
+            ToggleButton(
+                checked = displayMode == "Seconds",
+                onCheckedChange = { displayMode = "Seconds" },
+                enabled = secondsUntilNewYear > 0,
+            ) {
+                Text("Seconds")
+            }
         }
-
-        if (minutesUntilNewYear > 0) {
-            val minutes = secondsUntilNewYear % 3600 / 60
-
-            CountdownUnit(
-                minutes.toString(),
-                if (minutes == 1L) "minute" else "minutes",
-            )
-        }
-
-        val seconds = secondsUntilNewYear % 60
-
-        CountdownUnit(
-            seconds.toString(),
-            if (seconds == 1L) "second" else "seconds",
-        )
 
         Text(
-            text = " until New Year",
+            text = "until New Year",
             fontSize = 24.sp,
+            modifier = Modifier.padding(top = 16.dp),
         )
     }
-}
-
-@Composable
-fun CountdownUnit(
-    number: String,
-    label: String,
-) {
-    Text(
-        text = number,
-        fontSize = 48.sp,
-    )
-    Text(
-        text = label,
-        fontSize = 24.sp,
-        modifier = Modifier.padding(bottom = 24.dp),
-    )
 }
 
 @Preview(showBackground = true)
